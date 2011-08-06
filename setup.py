@@ -1,11 +1,13 @@
 # -*- coding: UTF-8 -*-
 #!/usr/bin/env python
 
-from distutils.core import setup
 import os
 
+from distutils.core import setup
+from glob import glob
+
 setup(name='wp-download',
-      version='0.1.1',
+      version='0.1.2b',
       description='Wikipedia database dump downloader',
       author='Wolodja Wentland',
       author_email='wentland@cl.uni-heidelberg.de',
@@ -13,6 +15,8 @@ setup(name='wp-download',
       license='GPLv3',
       scripts=['scripts/wp-download'],
       long_description = open('doc/description.rst').read(),
+      packages=['wp_download'],
+      package_dir={'': 'lib'},
       data_files=[
           ('share/doc/wp-download/examples/', ['examples/wpdownloadrc.sample']),
           ('share/doc/wp-download/doc', ['doc/Makefile','doc/README']),
