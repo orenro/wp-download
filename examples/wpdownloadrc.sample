@@ -10,7 +10,7 @@
 # -----------------
 #   Base URL where wikipedia xml/sql dumps can be downloaded
 
-base_url = http://download.wikimedia.org
+base_url = http://dumps.wikimedia.org
 
 [Templates]
 
