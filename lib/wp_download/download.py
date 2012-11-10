@@ -259,6 +259,9 @@ class WPDownloader(object):
                 if not self._options.quiet:
                     pbar = init_progressbar(path, content_length)
                     pbar.start()
+                    if offset:
+                        pbar.update(offset)
+                        read = offset
 
                 for block in iter(lambda: remote_file.read(block_size), ''):
                     local_file.write(block)
