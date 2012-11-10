@@ -246,7 +246,7 @@ class WPDownloader(object):
         downloader = PartialDownloader()
         downloader.addheader('Range', 'bytes=%s-' % (offset))
 
-        with nested(open(path, 'wb'), closing(downloader.open(url))) as (
+        with nested(open(path, 'ab'), closing(downloader.open(url))) as (
             local_file, remote_file):
 
             if offset:
