@@ -211,6 +211,9 @@ class WPDownloader(object):
         :type path:     string
         """
         tries = 0
+        # Add a trailing .part suffix so that partial files are
+        # flagged as such
+        path = path + ".part"
 
         while True:
             if tries == self._options.retries:
@@ -218,6 +221,8 @@ class WPDownloader(object):
                     os.path.basename(url)), 'Retry limit exceeded')
             try:
                 self.retrieve(url, path)
+                # Remove the trailing .part suffix
+                os.rename(path, os.path.splitext(path)[0])
                 break
             except socket.error, s_err:
                 LOG.error('Socket Error: %s' % (s_err))
