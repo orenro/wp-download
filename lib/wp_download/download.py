@@ -384,7 +384,9 @@ class URLHandler(object):
         :returns:   The latest dump date
         :rtype:     datetime.datetime
         """
-        return max(self.dump_dates(self.language_url(language)))
+        dates = [ d for d in self.dump_dates(self.language_url(language)) ] + \
+            [ datetime.datetime.strptime('19000101', '%Y%m%d') ]
+        return max(dates)
 
     def urls_for_language(self, language):
         """Iterator for all file URLs to download.
