@@ -137,6 +137,8 @@ class WPDownloader(object):
         :rtype:         int
         """
         with closing(self._downloader.open(url)) as remote_file:
+            if remote_file.getcode() >= 300:
+                return 0
             return int(remote_file.headers['Content-Length'])
 
     def _should_skip_url(self, url, path):
@@ -226,13 +228,10 @@ class WPDownloader(object):
                 break
             except socket.error, s_err:
                 LOG.error('Socket Error: %s' % (s_err))
-                os.remove(path)
             except IOError, io_err:
                 LOG.error(io_err)
-                os.remove(path)
             except wpd_exc.DownloadError, down_err:
                 LOG.error(down_err)
-                os.remove(path)
             finally:
                 tries += 1
 
@@ -251,37 +250,41 @@ class WPDownloader(object):
         downloader = PartialDownloader()
         downloader.addheader('Range', 'bytes=%s-' % (offset))
 
-        with nested(open(path, 'ab'), closing(downloader.open(url))) as (
-            local_file, remote_file):
+        with closing(downloader.open(url)) as remote_file:
+            if remote_file.getcode() >= 300:
+                raise wpd_exc.DownloadError(
+                    'Got HTTP response code: %d for file %s' % 
+                    (remote_file.getcode(), os.path.basename(path)))
 
-            if offset:
-                LOG.info('Resume: %s' % (os.path.basename(path)))
-                local_file.seek(offset)
+            with open(path, 'ab') as local_file:
+                if offset:
+                    LOG.info('Resume: %s' % (os.path.basename(path)))
+                    local_file.seek(offset)
 
-            content_length = self._remote_content_length(url)
+                content_length = self._remote_content_length(url)
 
-            try:
-                if not self._options.quiet:
-                    pbar = init_progressbar(path, content_length)
-                    pbar.start()
-                    if offset:
-                        pbar.update(offset)
-                        read = offset
-
-                for block in iter(lambda: remote_file.read(block_size), ''):
-                    local_file.write(block)
-                    read += len(block)
-
-                    if read > content_length:
-                        raise wpd_exc.DownloadError(
-                            'Received data exceeds advertised size: %s' % (
-                                os.path.basename(path)))
-
+                try:
                     if not self._options.quiet:
-                        pbar.update(read)
-            finally:
-                if not self._options.quiet:
-                    pbar.finish()
+                        pbar = init_progressbar(path, content_length)
+                        pbar.start()
+                        if offset:
+                            pbar.update(offset)
+                            read = offset
+
+                    for block in iter(lambda: remote_file.read(block_size), ''):
+                        local_file.write(block)
+                        read += len(block)
+
+                        if read > content_length:
+                            raise wpd_exc.DownloadError(
+                                'Received data exceeds advertised size: %s' % (
+                                    os.path.basename(path)))
+
+                        if not self._options.quiet:
+                            pbar.update(read)
+                finally:
+                    if not self._options.quiet:
+                        pbar.finish()
 
     def download_language(self, language, path):
         """Download all files for given language
@@ -386,7 +389,9 @@ class URLHandler(object):
         :returns:   The latest dump date
         :rtype:     datetime.datetime
         """
-        return max(self.dump_dates(self.language_url(language)))
+        dates = [ d for d in self.dump_dates(self.language_url(language)) ] + \
+            [ datetime.datetime.strptime('19000101', '%Y%m%d') ]
+        return max(dates)
 
     def urls_for_language(self, language):
         """Iterator for all file URLs to download.
