@@ -337,7 +337,7 @@ class URLHandler(object):
         self._config = config
 
         self._urlopener = urllib.FancyURLopener()
-        self._date_matcher = re.compile(r'<a href="(\d{8})/">\1</a>')
+        self._date_matcher = re.compile(r'<a href="(\d{8})/">\1/</a>')
 
         self._host = self._config.get('Configuration', 'base_url')
 
