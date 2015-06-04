@@ -95,7 +95,7 @@ class WPDownloader(object):
         """
         self._options = options
         self._config = wpd_conf.Configuration(options)
-        self._urlhandler = URLHandler(self._config)
+        self._urlhandler = URLHandler(options, self._config)
         self._downloader = urllib.FancyURLopener()
 
         LOG.info('Set timeout to %d' % (options.timeout))
@@ -326,13 +326,16 @@ class URLHandler(object):
     Handler for Wikipedia dump download URLs
     """
 
-    def __init__(self, config):
+    def __init__(self, options, config):
         """
         Constructor.
 
         :param config:	Configuration
+        :type options:  optparse.OptionParser
         :type config:   Initialised ConfigParser.SafeConfigParser instance
         """
+        self._options = options
+
         assert config
         self._config = config
 
@@ -389,6 +392,12 @@ class URLHandler(object):
         :returns:   The latest dump date
         :rtype:     datetime.datetime
         """
+        pairs = self._options.custom_dump or []
+        custom_dates = dict(
+            [pair.split(':', 1) for pair in pairs])
+        if language in custom_dates:
+            return datetime.datetime.strptime(custom_dates[language], '%Y%m%d')
+
         dates = [ d for d in self.dump_dates(self.language_url(language)) ] + \
             [ datetime.datetime.strptime('19000101', '%Y%m%d') ]
         return max(dates)
