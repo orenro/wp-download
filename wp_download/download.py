@@ -253,7 +253,7 @@ class WPDownloader(object):
         with closing(downloader.open(url)) as remote_file:
             if remote_file.getcode() >= 300:
                 raise wpd_exc.DownloadError(
-                    'Got HTTP response code: %d for file %s' % 
+                    'Got HTTP response code: %d for file %s' %
                     (remote_file.getcode(), os.path.basename(path)))
 
             with open(path, 'ab') as local_file:

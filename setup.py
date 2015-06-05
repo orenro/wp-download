@@ -16,7 +16,6 @@ setup(name='wp-download',
       scripts=['scripts/wp-download'],
       long_description = open('doc/description.rst').read(),
       packages=['wp_download'],
-      package_dir={'': 'lib'},
       data_files=[
           ('share/doc/wp-download/examples/', ['examples/wpdownloadrc.sample']),
           ('share/doc/wp-download/doc', ['doc/Makefile','doc/README']),
