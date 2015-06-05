@@ -110,6 +110,12 @@ def init_parser():
                             help='Set number of download attempts '
                             '[default: %default]')
 
+    down_options.add_option('--custom-dump',
+                            action='append', dest='custom_dump',
+                            metavar='LANG:DATE',
+                            help='Download a custom dump for specific language '
+                            '(e.g., en:20150603)')
+
     new_parser.add_option_group(down_options)
 
     return new_parser
