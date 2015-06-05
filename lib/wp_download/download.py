@@ -95,7 +95,7 @@ class WPDownloader(object):
         """
         self._options = options
         self._config = wpd_conf.Configuration(options)
-        self._urlhandler = URLHandler(options, self._config)
+        self._urlhandler = URLHandler(self._config, options)
         self._downloader = urllib.FancyURLopener()
 
         LOG.info('Set timeout to %d' % (options.timeout))
@@ -326,7 +326,7 @@ class URLHandler(object):
     Handler for Wikipedia dump download URLs
     """
 
-    def __init__(self, options, config):
+    def __init__(self, config, options=None):
         """
         Constructor.
 
@@ -334,8 +334,6 @@ class URLHandler(object):
         :type options:  optparse.OptionParser
         :type config:   Initialised ConfigParser.SafeConfigParser instance
         """
-        self._options = options
-
         assert config
         self._config = config
 
@@ -347,6 +345,9 @@ class URLHandler(object):
         self._lang_dir_template = self._config.string_template(
             'language_dir_format')
         self._filename_template = self._config.string_template('file_format')
+        self._custom_dump = []
+        if options and options.custom_dump:
+            self._custom_dump.extend(options.custom_dump)
 
     def language_dir(self, language):
         """Get the directory for given language
@@ -392,9 +393,8 @@ class URLHandler(object):
         :returns:   The latest dump date
         :rtype:     datetime.datetime
         """
-        pairs = self._options.custom_dump or []
         custom_dates = dict(
-            [pair.split(':', 1) for pair in pairs])
+            [pair.split(':', 1) for pair in self._custom_dump])
         if language in custom_dates:
             return datetime.datetime.strptime(custom_dates[language], '%Y%m%d')
 
