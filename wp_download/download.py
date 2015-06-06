@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-# © Copyright 2009 Wolodja Wentland. All Rights Reserved.
+# © Copyright 2009-2015 Wolodja Wentland. All Rights Reserved.
 
 # This file is part of wp-download.
 #

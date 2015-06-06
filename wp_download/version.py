@@ -1,4 +1,7 @@
 # -*- coding: UTF-8 -*-
+"""
+wp-download version information
+"""
 
 # © Copyright 2009-2015 Wolodja Wentland. All Rights Reserved.
 
@@ -16,7 +19,4 @@
 # You should have received a copy of the GNU General Public License
 # along with wp-download. If not, see <http://www.gnu.org/licenses/>.
 
-import logging
-
-LOG = logging.getLogger(__name__)
-LOG.setLevel(logging.DEBUG)
+__version__ = '0.1.2b'

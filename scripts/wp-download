@@ -6,7 +6,7 @@ wp-download
 This is a downloader for Wikipedia database dumps
 """
 
-# © Copyright 2009 Wolodja Wentland. All Rights Reserved.
+# © Copyright 2009-2015 Wolodja Wentland. All Rights Reserved.
 
 # This file is part of wp-download.
 #
@@ -22,10 +22,6 @@ This is a downloader for Wikipedia database dumps
 # You should have received a copy of the GNU General Public License
 # along with wp-download. If not, see <http://www.gnu.org/licenses/>.
 
-__version__ = '0.1.1'
-__author__ = 'Wolodja Wentland <babilen@gmail.com>'
-__copyright__ = '© Copyright 2009-2011 Wolodja Wentland'
-
 import argparse
 import logging
 import os
@@ -34,6 +30,8 @@ import sys
 import wp_download as wpd
 import wp_download.download as wpd_down
 import wp_download.exceptions as wpd_exc
+
+from wp_download.version import __version__
 
 LOG = logging.getLogger('wp-download')
 LOG.setLevel(logging.DEBUG)
