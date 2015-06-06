@@ -26,7 +26,7 @@ __version__ = '0.1.1'
 __author__ = 'Wolodja Wentland <babilen@gmail.com>'
 __copyright__ = '© Copyright 2009-2011 Wolodja Wentland'
 
-import optparse
+import argparse
 import logging
 import os
 import sys
@@ -41,89 +41,102 @@ LOG.setLevel(logging.DEBUG)
 def init_parser():
     """Initialise command line parser."""
 
-    usage = 'Usage: %prog [options] DIR'
-    new_parser = optparse.OptionParser(usage)
+    parser = argparse.ArgumentParser()
 
-    new_parser.add_option('-q', '--quiet',
-                          action='store_true', dest='quiet',
-                          default=False,
-                          help='do not generate output (only report errors)')
-
-    new_parser.add_option('-v', '--verbose',
-                          action='store_true', dest='verbose',
-                          default=False,
-                          help='generate verbose output')
-
-    new_parser.add_option('-c', '--config', metavar='FILE',
-                          type='string',
-                          default = os.path.expanduser('~/.wpdownloadrc'),
-                          help='load configuration from FILE ' \
-                               '[default: %default]'
-                         )
-
-    new_parser.add_option('--version',
-                          action='store_true',
-                          default=False,
-                          help='display version')
+    parser.add_argument(
+        '-q', '--quiet',
+        action='store_true', dest='quiet',
+        default=False,
+        help='do not generate output (only report errors)'
+    )
+    parser.add_argument(
+        '-v', '--verbose',
+        action='store_true',
+        dest='verbose',
+        default=False,
+        help='generate verbose output'
+    )
+    parser.add_argument(
+        '-c', '--config',
+        metavar='FILE',
+        default = os.path.expanduser('~/.wpdownloadrc'),
+        help='load configuration from FILE [default: %(default)s]'
+    )
+    parser.add_argument(
+        '--version',
+        action='version',
+        version='%(prog)s {}'.format(__version__)
+    )
+    parser.add_argument(
+        'DOWNLOAD_DIR',
+        help='Directory in which dumps are saved',
+    )
 
     # Logging related options
 
-    log_options = optparse.OptionGroup(
-        new_parser, 'Logging','Specify log file handling.')
-
     log_level = ['DEBUG', 'INFO', 'WARNING', 'ERROR']
 
-    log_options.add_option('--log-file', metavar='FILE',
-                           type='string',
-                           help='write logs to FILE')
-
-    log_options.add_option('--log-file-level',
-                           help='set log level (' +
-                           ', '.join(log_level) +
-                           ') [default: %default]',
-                           action='store', default='INFO',
-                           type='choice', choices=log_level)
-    new_parser.add_option_group(log_options)
+    log_options = parser.add_argument_group(
+        'Logging',
+        'Specify log file handling.'
+    )
+    log_options.add_argument(
+        '--log-file',
+        metavar='FILE',
+        help='write logs to FILE'
+    )
+    log_options.add_argument(
+        '--log-file-level',
+        help='set log level [default: %(default)s]',
+        action='store',
+        default='INFO',
+        choices=log_level
+    )
 
     # Download related options
-    down_options = optparse.OptionGroup(
-        new_parser, 'Download', 'Change download behaviour')
+    down_options = parser.add_argument_group(
+        'Download',
+        'Change download behaviour'
+    )
+    down_options.add_argument(
+        '--force',
+        action='store_true',
+        dest='force',
+        default=False,
+        help='Force download of all files.'
+    )
+    down_options.add_argument(
+        '--resume',
+        action='store_true',
+        dest='resume',
+        default=False,
+        help='Resume partial downloads.'
+    )
+    down_options.add_argument(
+        '--timeout',
+        type=int,
+        dest='timeout',
+        default=30,
+        help='Set timeout for download in seconds [default: %(default)ss]')
+    down_options.add_argument(
+        '--retries',
+        type=int,
+        dest='retries',
+        default=3,
+        help='Set number of download attempts [default: %(default)s]'
+    )
+    down_options.add_argument(
+        '--custom-dump',
+        action='append',
+        dest='custom_dump',
+        metavar='LANG:DATE',
+        help='Download a custom dump for specific language (e.g., en:20150603)'
+    )
 
-    down_options.add_option('--force',
-                            action='store_true', dest='force',
-                            default=False,
-                            help='Force download of all files.')
-    down_options.add_option('--resume',
-                            action='store_true', dest='resume',
-                            default=False,
-                            help='Resume partial downloads.')
-
-    down_options.add_option('--timeout',
-                            type='int', dest='timeout',
-                            default=30,
-                            help='Set timeout for download in seconds '
-                            '[default: %defaults]')
-
-    down_options.add_option('--retries',
-                            type='int', dest='retries',
-                            default=3,
-                            help='Set number of download attempts '
-                            '[default: %default]')
-
-    down_options.add_option('--custom-dump',
-                            action='append', dest='custom_dump',
-                            metavar='LANG:DATE',
-                            help='Download a custom dump for specific language '
-                            '(e.g., en:20150603)')
-
-    new_parser.add_option_group(down_options)
-
-    return new_parser
+    return parser
 
 def init_logging(options):
     """Initialise logging framework
-
-    :param options: Options obtained from optparse
     """
 
     error_handler = logging.StreamHandler(sys.stderr)
@@ -161,27 +174,19 @@ def critical_error(err, exit_code):
     LOG.error(unicode(err))
     sys.exit(exit_code)
 
+
 if __name__ == '__main__':
 
     try:
-        PARSER = init_parser()
-        (OPTIONS, ARGS) = PARSER.parse_args()
-        init_logging(OPTIONS)
+        parser = init_parser()
+        args = parser.parse_args()
+        init_logging(args)
 
-        if OPTIONS.version:
-            print 'wp-download version %s\n%s' % (__version__, __copyright__)
-            sys.exit(0)
-
-        if not ARGS:
-            print PARSER.get_usage()
-            critical_error('Missing argument (download directory)',
-                           wpd_exc.EARGUMENT)
-
-        DOWNLOAD_PATH = os.path.abspath(ARGS[0])
+        download_path = os.path.abspath(args.DOWNLOAD_DIR)
 
         try:
-            WP_DOWN = wpd_down.WPDownloader(OPTIONS)
-            WP_DOWN.download_all_languages(DOWNLOAD_PATH)
+            wp_down = wpd_down.WPDownloader(args)
+            wp_down.download_all_languages(download_path)
 
         except wpd_exc.ConfigParseError, cp_err:
             critical_error(cp_err, wpd_exc.ECPARSE)

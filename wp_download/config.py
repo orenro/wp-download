@@ -48,9 +48,6 @@ class Configuration(ConfigParser.SafeConfigParser):
     def __init__(self, options):
         """
         Constructor.
-
-        :param options:	Options as obtained from optparse
-        :type options:  optparse.OptionParser
         """
         ConfigParser.SafeConfigParser.__init__(self)
 

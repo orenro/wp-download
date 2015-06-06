@@ -89,9 +89,6 @@ class WPDownloader(object):
     def __init__(self, options):
         """
         Constructor.
-
-        :param options: Options as obtained from optparse
-        :type options:  optparse.OptionParser
         """
         self._options = options
         self._config = wpd_conf.Configuration(options)
@@ -331,8 +328,6 @@ class URLHandler(object):
         Constructor.
 
         :param config:	Configuration
-        :type options:  optparse.OptionParser
-        :type config:   Initialised ConfigParser.SafeConfigParser instance
         """
         assert config
         self._config = config
