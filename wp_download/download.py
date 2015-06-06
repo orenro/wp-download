@@ -223,11 +223,11 @@ class WPDownloader(object):
                 # Remove the trailing .part suffix
                 os.rename(path, os.path.splitext(path)[0])
                 break
-            except socket.error, s_err:
+            except socket.error as s_err:
                 LOG.error('Socket Error: %s' % (s_err))
-            except IOError, io_err:
+            except IOError as io_err:
                 LOG.error(io_err)
-            except wpd_exc.DownloadError, down_err:
+            except wpd_exc.DownloadError as down_err:
                 LOG.error(down_err)
             finally:
                 tries += 1
@@ -374,7 +374,7 @@ class URLHandler(object):
             with closing(self._urlopener.open(url)) as lang_site:
                 return (datetime.datetime.strptime(date, '%Y%m%d') for date in
                          self._date_matcher.findall(lang_site.read()))
-        except IOError, io_err:
+        except IOError as io_err:
             LOG.error(io_err)
             LOG.error('Could not retrieve: %s' % (url))
             raise io_err
@@ -412,7 +412,7 @@ class URLHandler(object):
         """
         try:
             latest = self.latest_dump_date(language)
-        except IOError, io_err:
+        except IOError as io_err:
             LOG.error('Could not get dump date for %s!' % (language))
             LOG.error('Skip: %s'%(language))
             LOG.error(io_err)

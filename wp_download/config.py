@@ -56,7 +56,7 @@ class Configuration(ConfigParser.SafeConfigParser):
         try:
             with open(self.config_file_path) as config_file:
                 self.readfp(config_file)
-        except ConfigParser.ParsingError, parse_err:
+        except ConfigParser.ParsingError as parse_err:
             raise wpd_exc.ConfigParseError(
                 orig_err=parse_err, config_file=self.config_file_path)
         else:
@@ -74,7 +74,7 @@ class Configuration(ConfigParser.SafeConfigParser):
                 for opt in self.options(section):
                     if self.getboolean(section, opt):
                         yield opt
-            except ValueError, val_err:
+            except ValueError as val_err:
                 raise wpd_exc.ConfigValueError(
                     orig_err=val_err, config_file=self.config_file_path,
                     section=section)
@@ -91,7 +91,7 @@ class Configuration(ConfigParser.SafeConfigParser):
         try:
             return string.Template(
                 self.get('Templates', template_name))
-        except ConfigParser.NoOptionError, nop_err:
+        except ConfigParser.NoOptionError as nop_err:
             raise wpd_exc.TemplateMissingError(
                 orig_err=nop_err, config_file=self.config_file_path,
                 template=template_name)

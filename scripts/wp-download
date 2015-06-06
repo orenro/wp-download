@@ -186,13 +186,13 @@ if __name__ == '__main__':
             wp_down = wpd_down.WPDownloader(args)
             wp_down.download_all_languages(download_path)
 
-        except wpd_exc.ConfigParseError, cp_err:
+        except wpd_exc.ConfigParseError as cp_err:
             critical_error(cp_err, wpd_exc.ECPARSE)
 
-        except wpd_exc.ConfigValueError, csv_err:
+        except wpd_exc.ConfigValueError as csv_err:
             critical_error(csv_err, wpd_exc.ECVALUE)
 
-        except IOError, io_err:
+        except IOError as io_err:
             critical_error(io_err, wpd_exc.EIO)
 
     except KeyboardInterrupt:
