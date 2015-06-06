@@ -66,7 +66,7 @@ def init_parser():
         version='%(prog)s {}'.format(__version__)
     )
     parser.add_argument(
-        'DOWNLOAD_DIR',
+        'download_dir',
         help='Directory in which dumps are saved',
     )
 
