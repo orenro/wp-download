@@ -1,4 +1,4 @@
-# -*- coding: UTF-8 -*-
+# -*- coding: utf-8 -*-
 
 # © Copyright 2009-2015 Wolodja Wentland. All Rights Reserved.
 
