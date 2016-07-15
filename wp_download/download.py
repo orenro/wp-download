@@ -350,7 +350,10 @@ class URLHandler(object):
         :param language:    ISO 631 language code
         :type language:     string
         """
-        return self._lang_dir_template.substitute(langcode=language)
+        if language == 'entities':
+            return 'wikidatawiki/entities'
+        else:
+            return self._lang_dir_template.substitute(langcode=language)
 
     def language_url(self, language):
         """Get the dump location for given language
@@ -421,8 +424,15 @@ class URLHandler(object):
         LOG.info('Latest dump for (%s) is from %s' % (
             language, latest.strftime('%A %d %B %Y')))
 
-        for filename in self._config.enabled_files():
-            server_path = '/'.join([
+        filetypes = self._config.enabled_files()
+        for filename in filetypes:
+            if language == 'entities':
+                server_path = '/'.join([
+                    self.language_dir(language),
+                    latest.strftime('%Y%m%d'),
+                    'wikidata-%s-all.json.gz' % latest.strftime('%Y%m%d')])
+            else:
+                server_path = '/'.join([
                     self.language_dir(language),
                     latest.strftime('%Y%m%d'),
                     self._filename_template.substitute(

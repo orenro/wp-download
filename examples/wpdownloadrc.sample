@@ -403,3 +403,9 @@ site_stats      = sql.gz
 #zh = True
 #zh_yue = True
 #zu = True
+
+# 'entities' is a pseudo-language that will download with wikidata json format, e.g.
+#   https://dumps.wikimedia.org/wikidatawiki/entities/20160711/wikidata-20160711-all.json.gz
+# using the pseudo-language 'wikidata' will download the older xml format, e.g.
+#   https://dumps.wikimedia.org/wikidatawiki/20160701/wikidatawiki-20160701-pages-articles.xml.bz2
+#entities = True
