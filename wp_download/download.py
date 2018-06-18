@@ -429,8 +429,7 @@ class URLHandler(object):
             if language == 'entities':
                 server_path = '/'.join([
                     self.language_dir(language),
-                    latest.strftime('%Y%m%d'),
-                    'wikidata-%s-all.json.gz' % latest.strftime('%Y%m%d')])
+                    'latest-all.json.gz'])
             else:
                 server_path = '/'.join([
                     self.language_dir(language),
